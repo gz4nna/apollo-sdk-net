@@ -35,6 +35,8 @@ public class Rule
     /// </summary>
     public string EffectiveAttribute => Attribute == "custom" ? CustomAttribute ?? "" : Attribute;
 
+    public string ToggleKey { get; set; }
+
     /// <summary>
     /// 预编译缓存
     /// </summary>

@@ -27,6 +27,15 @@ public class Toggle
 
     public void Initialize()
     {
-        Audiences?.ForEach(a => a.Rules?.ForEach(r => r.Prepare()));
+        Audiences?.ForEach(Audience =>
+            Audience.Rules?.ForEach(Rule =>
+                Rule.Prepare()
+            )
+        );
+        Audiences?.ForEach(Audience =>
+            Audience.Rules?.ForEach(Rule =>
+                Rule.ToggleKey = Key
+            )
+        );
     }
 }

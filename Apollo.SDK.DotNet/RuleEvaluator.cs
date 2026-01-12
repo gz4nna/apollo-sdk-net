@@ -45,6 +45,19 @@ public class RuleEvaluator
                     }
                     return actual >= range.Item1 && actual <= range.Item2;
                 }
+            },
+            { "traffic", (rule, actVal) =>
+                {
+                    if (double.TryParse(rule.Value, out double percentage))
+                    {
+                        string combinedKey = $"{rule.ToggleKey}_{actVal}";
+                        uint hash = MurmurHash3.Hash(combinedKey);
+                        double bucket = hash % 100;
+
+                        return bucket < percentage;
+                    }
+                    return false;
+                }
             }
         };
     }
