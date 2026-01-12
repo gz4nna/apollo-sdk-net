@@ -34,4 +34,45 @@ public class Rule
     /// 规则 真实属性
     /// </summary>
     public string EffectiveAttribute => Attribute == "custom" ? CustomAttribute ?? "" : Attribute;
+
+    /// <summary>
+    /// 预编译缓存
+    /// </summary>
+    private object? _parsedValue;
+
+    /// <summary>
+    /// 预编译方法 加速 in 和 between
+    /// </summary>
+    public void Prepare()
+    {
+        if (string.IsNullOrEmpty(Value)) return;
+
+        switch (Operator)
+        {
+            case "between":
+                var parts = Value.Split(',');
+                if (parts.Length == 2 &&
+                    double.TryParse(parts[0], out double min) &&
+                    double.TryParse(parts[1], out double max))
+                {
+                    // 区间元组
+                    _parsedValue = (min, max);
+                }
+                break;
+            case "in":
+                var set = new HashSet<string>(
+                    Value.Split(',').Select(x => x.Trim()),
+                    StringComparer.OrdinalIgnoreCase
+                );
+                // 哈希集合
+                _parsedValue = set;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 获取预编译缓存
+    /// </summary>
+    /// <returns></returns>
+    public object? GetParsedValue() => _parsedValue;
 }

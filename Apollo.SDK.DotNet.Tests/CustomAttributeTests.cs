@@ -7,7 +7,7 @@ public class CustomAttributeTests
     private readonly RuleEvaluator _evaluator = new();
 
     [Fact]
-    public void Custom_Attribute_Should_Work()
+    public void CustomAttributeTest()
     {
         var rule = new Rule
         {

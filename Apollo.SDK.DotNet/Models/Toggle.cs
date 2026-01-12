@@ -24,4 +24,9 @@ public class Toggle
     /// 开关 群组集
     /// </summary>
     public List<Audience> Audiences { get; set; } = [];
+
+    public void Initialize()
+    {
+        Audiences?.ForEach(a => a.Rules?.ForEach(r => r.Prepare()));
+    }
 }

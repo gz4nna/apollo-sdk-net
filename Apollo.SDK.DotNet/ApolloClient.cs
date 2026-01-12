@@ -21,13 +21,16 @@ public class ApolloClient
             throw new DirectoryNotFoundException($"Path not found: {directoryPath}");
 
         var files = Directory.GetFiles(directoryPath, "*.json");
+
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
         foreach (var file in files)
         {
             var content = File.ReadAllText(file);
-            var toggle = JsonSerializer.Deserialize<Toggle>(content, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            var toggle = JsonSerializer.Deserialize<Toggle>(content, options);
+
+            // 预处理 between
+            toggle?.Initialize();
 
             if (toggle?.Key != null)
             {

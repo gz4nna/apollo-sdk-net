@@ -7,30 +7,43 @@ namespace Apollo.SDK.DotNet;
 /// </summary>
 public class RuleEvaluator
 {
-    private readonly Dictionary<string, Func<string, object, bool>> _operators;
+    private readonly Dictionary<string, Func<Rule, object, bool>> _operators;
 
     public RuleEvaluator()
     {
-        _operators = new Dictionary<string, Func<string, object, bool>>
+        _operators = new Dictionary<string, Func<Rule, object, bool>>
         {
-            { "equals", (refVal, actVal) => actVal?.ToString() == refVal },
-            { "not_equals", (refVal, actVal) => actVal?.ToString() != refVal },
-            { "gt", (refVal, actVal) => Convert.ToDouble(actVal) > Convert.ToDouble(refVal) },
-            { "lt", (refVal, actVal) => Convert.ToDouble(actVal) < Convert.ToDouble(refVal) },
-            { "contains", (refVal, actVal) => actVal?.ToString()?.Contains(refVal) ?? false },
-            { "in", (refVal, actVal) => refVal.Split(',').Select(x => x.Trim()).Contains(actVal?.ToString()) },
-            { "between", (refVal, actVal) =>
+            { "equals", (rule, actVal) => actVal?.ToString() == rule.Value },
+            { "not_equals", (rule, actVal) => actVal?.ToString() != rule.Value },
+            { "gt", (rule, actVal) => Convert.ToDouble(actVal) > Convert.ToDouble(rule.Value) },
+            { "lt", (rule, actVal) => Convert.ToDouble(actVal) < Convert.ToDouble(rule.Value) },
+            { "contains", (rule, actVal) => actVal?.ToString()?.Contains(rule.Value) ?? false },
+            { "in", (rule, actVal) =>
                 {
-                    var parts = refVal.Split(',');
-                    if (parts.Length != 2) return false;
-
-                    if (double.TryParse(parts[0], out double min) &&
-                        double.TryParse(parts[1], out double max) &&
-                        double.TryParse(actVal?.ToString(), out double actual))
+                    // 降级
+                    if (rule.GetParsedValue() is not HashSet<string> set)
+                        return rule.Value.Split(',').Select(x => x.Trim()).Contains(actVal?.ToString());
+                    return set.Contains(actVal?.ToString() ?? string.Empty);
+                }
+            },
+            { "between", (rule, actVal) =>
+                {
+                    if (!double.TryParse(actVal?.ToString(), out double actual))
+                        return false;
+                    // 降级
+                    if(rule.GetParsedValue() is not ValueTuple<double, double> range)
                     {
-                        return actual >= min && actual <= max;
+                        var parts = rule.Value.Split(',');
+                        if (parts.Length != 2) return false;
+
+                        if (double.TryParse(parts[0], out double min) &&
+                            double.TryParse(parts[1], out double max) )
+                        {
+                            return actual >= min && actual <= max;
+                        }
+                        return false;
                     }
-                    return false;
+                    return actual >= range.Item1 && actual <= range.Item2;
                 }
             }
         };
@@ -51,7 +64,7 @@ public class RuleEvaluator
         {
             try
             {
-                return func(rule.Value, actualValue);
+                return func(rule, actualValue);
             }
             catch
             {
