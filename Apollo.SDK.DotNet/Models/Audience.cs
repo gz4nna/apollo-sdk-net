@@ -1,4 +1,6 @@
-﻿namespace Apollo.SDK.DotNet.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Apollo.SDK.DotNet.Models;
 
 /// <summary>
 /// 群组
@@ -8,12 +10,12 @@ public class Audience
     /// <summary>
     /// 群组 Id
     /// </summary>
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// 群组 名称
     /// </summary>
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// 群组 规则集

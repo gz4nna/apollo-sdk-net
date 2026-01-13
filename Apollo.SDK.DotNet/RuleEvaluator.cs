@@ -48,15 +48,17 @@ public class RuleEvaluator
             },
             { "traffic", (rule, actVal) =>
                 {
-                    if (double.TryParse(rule.Value, out double percentage))
-                    {
-                        string combinedKey = $"{rule.ToggleKey}_{actVal}";
-                        uint hash = MurmurHash3.Hash(combinedKey);
-                        double bucket = hash % 100;
+                    if (rule.GetParsedValue() is not double percentValue)
+                    // 降级
+                        if (!double.TryParse(rule.Value, out percentValue))
+                            return false;
 
-                        return bucket < percentage;
-                    }
-                    return false;
+                    // 用 开关Key_用户ID 做盐值
+                    string salt = $"{rule.ToggleKey}_{actVal}";
+                    uint hash = MurmurHash3.Hash(salt);
+                    double bucket = hash % 100;
+
+                    return bucket < percentValue;
                 }
             }
         };
@@ -66,8 +68,8 @@ public class RuleEvaluator
     /// 执行
     /// </summary>
     /// <param name="rule">规则</param>
-    /// <param name="context"></param>
-    /// <returns></returns>
+    /// <param name="context">上下文参数</param>
+    /// <returns>是否符合规则</returns>
     public bool Evaluate(Rule rule, Dictionary<string, object> context)
     {
         if (!context.TryGetValue(rule.EffectiveAttribute, out var actualValue))

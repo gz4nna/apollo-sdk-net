@@ -8,22 +8,22 @@ public class Rule
     /// <summary>
     /// 规则 Id
     /// </summary>
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// 规则 属性
     /// </summary>
-    public string Attribute { get; set; }
+    public required string Attribute { get; set; }
 
     /// <summary>
     /// 规则 操作符
     /// </summary>
-    public string Operator { get; set; }
+    public required string Operator { get; set; }
 
     /// <summary>
     /// 规则 值
     /// </summary>
-    public string Value { get; set; }
+    public required string Value { get; set; }
 
     /// <summary>
     /// 规则 自定义属性
@@ -35,7 +35,7 @@ public class Rule
     /// </summary>
     public string EffectiveAttribute => Attribute == "custom" ? CustomAttribute ?? "" : Attribute;
 
-    public string ToggleKey { get; set; }
+    public required string ToggleKey { get; set; }
 
     /// <summary>
     /// 预编译缓存
@@ -68,6 +68,13 @@ public class Rule
                 );
                 // 哈希集合
                 _parsedValue = set;
+                break;
+            case "traffic":
+                // 直接缓存百分比数值
+                if (double.TryParse(Value, out double percentValue))
+                {
+                    _parsedValue = percentValue;
+                }
                 break;
         }
     }

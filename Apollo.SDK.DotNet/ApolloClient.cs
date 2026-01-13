@@ -7,7 +7,9 @@ namespace Apollo.SDK.DotNet;
 
 public class ApolloClient
 {
+    // 存储开关配置
     private readonly ConcurrentDictionary<string, Toggle> _toggles = new();
+    // 规则执行器
     private readonly RuleEvaluator _evaluator = new();
 
     /// <summary>
@@ -43,12 +45,19 @@ public class ApolloClient
     /// 判断是否符合
     /// </summary>
     /// <param name="key">开关 Key</param>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    public bool IsToggleAllow(string key, Dictionary<string, object> context)
+    /// <param name="userId">用户ID</param>
+    /// <param name="context">上下文参数</param>
+    /// <returns>是否符合开关条件</returns>
+    public bool IsToggleAllow(string key, string userId, Dictionary<string, object> context)
     {
         if (!_toggles.TryGetValue(key, out var toggle) || toggle.Status != "enabled")
             return false;
+
+        // 添加 userId 到上下文
+        if (!context.ContainsKey("traffic"))
+        {
+            context["traffic"] = userId;
+        }
 
         return toggle.Audiences.Any(audience =>
             audience.Rules.All(rule =>
