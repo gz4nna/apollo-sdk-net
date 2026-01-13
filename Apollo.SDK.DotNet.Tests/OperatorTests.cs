@@ -48,7 +48,14 @@ public class OperatorTests
 
     public void OperatorTest(string op, string configVal, object userVal, bool expected)
     {
-        var rule = new Rule { Operator = op, Value = configVal, Attribute = "test_key" };
+        var rule = new Rule
+        {
+            ToggleKey = "test_toggle",
+            Id = "rule_1",
+            Operator = op,
+            Value = configVal,
+            Attribute = "test_key"
+        };
         rule.Prepare();
 
         var context = new Dictionary<string, object> { { "test_key", userVal } };

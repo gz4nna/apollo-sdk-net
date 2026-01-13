@@ -11,6 +11,8 @@ public class CustomAttributeTests
     {
         var rule = new Rule
         {
+            Id = "rule_custom_1",
+            ToggleKey = "test_toggle",
             Attribute = "custom",
             CustomAttribute = "vip_level",
             Operator = "equals",
