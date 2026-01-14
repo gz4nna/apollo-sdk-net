@@ -2,8 +2,14 @@ using Apollo.SDK.DotNet.Models;
 
 namespace Apollo.SDK.DotNet.Tests;
 
+/// <summary>
+/// 流量验证测试
+/// </summary>
 public class TrafficValidationTests
 {
+    /// <summary>
+    /// 测试流量分配是否符合预期
+    /// </summary>
     [Fact]
     public void TrafficValidationTest()
     {
@@ -20,7 +26,7 @@ public class TrafficValidationTests
 
         var evaluator = new RuleEvaluator();
         int hitCount = 0;
-        int totalUserCount = 10000;
+        int totalUserCount = 100000;
 
         for (int i = 0; i < totalUserCount; i++)
         {

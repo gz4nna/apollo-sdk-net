@@ -6,6 +6,13 @@ public class OperatorTests
 {
     private readonly RuleEvaluator _evaluator = new();
 
+    /// <summary>
+    /// 测试各种操作符的规则评估
+    /// </summary>
+    /// <param name="op">操作符</param>
+    /// <param name="configVal">配置值</param>
+    /// <param name="userVal">用户值</param>
+    /// <param name="expected">期望结果</param>
     [Theory]
     #region equals
     [InlineData("equals", "100", "100", true)]

@@ -2,8 +2,17 @@
 
 namespace Apollo.SDK.DotNet;
 
+/// <summary>
+/// MurmurHash3 实现
+/// </summary>
 public static class MurmurHash3
 {
+    /// <summary>
+    /// 计算字符串的 MurmurHash3 哈希值
+    /// </summary>
+    /// <param name="input">输入字符串</param>
+    /// <param name="seed">种子</param>
+    /// <returns></returns>
     public static uint Hash(string input, uint seed = 0)
     {
         byte[] data = System.Text.Encoding.UTF8.GetBytes(input);

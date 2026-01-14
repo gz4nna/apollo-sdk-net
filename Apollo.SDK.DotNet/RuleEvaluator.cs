@@ -48,8 +48,8 @@ public class RuleEvaluator
             },
             { "traffic", (rule, actVal) =>
                 {
-                    if (rule.GetParsedValue() is not double percentValue)
                     // 降级
+                    if (rule.GetParsedValue() is not double percentValue)
                         if (!double.TryParse(rule.Value, out percentValue))
                             return false;
 
