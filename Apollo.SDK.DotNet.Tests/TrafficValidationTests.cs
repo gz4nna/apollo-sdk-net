@@ -17,7 +17,7 @@ public class TrafficValidationTests
         {
             Id = "rule_traffic_1",
             Attribute = "traffic",
-            Operator = "traffic",
+            Operator = "lt",
             Value = "30",
             ToggleKey = "test_toggle"
         };

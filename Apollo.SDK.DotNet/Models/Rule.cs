@@ -35,7 +35,12 @@ public class Rule
     /// </summary>
     public string EffectiveAttribute => Attribute == "custom" ? CustomAttribute ?? "" : Attribute;
 
-    public required string ToggleKey { get; set; }
+    /// <summary>
+    /// 开关 Key  可缺失
+    /// </summary>
+#pragma warning disable CS8618
+    public string ToggleKey { get; set; }
+#pragma warning restore CS8618 
 
     /// <summary>
     /// 预编译缓存

@@ -45,21 +45,6 @@ public class RuleEvaluator
                     }
                     return actual >= range.Item1 && actual <= range.Item2;
                 }
-            },
-            { "traffic", (rule, actVal) =>
-                {
-                    // 降级
-                    if (rule.GetParsedValue() is not double percentValue)
-                        if (!double.TryParse(rule.Value, out percentValue))
-                            return false;
-
-                    // 用 开关Key_用户ID 做盐值
-                    string salt = $"{rule.ToggleKey}_{actVal}";
-                    uint hash = MurmurHash3.Hash(salt);
-                    double bucket = hash % 100;
-
-                    return bucket < percentValue;
-                }
             }
         };
     }
@@ -74,6 +59,17 @@ public class RuleEvaluator
     {
         if (!context.TryGetValue(rule.EffectiveAttribute, out var actualValue))
             return false;
+
+        // 如果 EffectiveAttribute 是 traffic，则在这里做加盐哈希
+        if (rule.EffectiveAttribute == "traffic")
+        {
+            // 用 开关Key_用户ID 做盐值
+            string salt = $"{rule.ToggleKey}_{actualValue}";
+            uint hash = MurmurHash3.Hash(salt);
+
+            double bucket = hash % 100;
+            actualValue = bucket;
+        }
 
         if (_operators.TryGetValue(rule.Operator, out var func))
         {

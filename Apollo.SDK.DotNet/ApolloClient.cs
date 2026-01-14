@@ -65,7 +65,7 @@ public class ApolloClient
             return true;
 
         // 添加 userId 到上下文
-        context["userId"] = userId;
+        context["user_id"] = userId;
         // 同时 traffic 使用的也是 userId
         if (!context.ContainsKey("traffic"))
         {
