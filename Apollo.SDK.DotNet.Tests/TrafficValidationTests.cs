@@ -31,7 +31,7 @@ public class TrafficValidationTests
         for (int i = 0; i < totalUserCount; i++)
         {
             var userId = $"user_{i}";
-            var context = new Dictionary<string, object> { { "traffic", userId } };
+            var context = new ApolloContext(userId) { { "traffic", userId } };
             if (evaluator.Evaluate(rule, context))
             {
                 hitCount++;

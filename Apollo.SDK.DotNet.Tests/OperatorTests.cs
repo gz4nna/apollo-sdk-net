@@ -65,7 +65,10 @@ public class OperatorTests
         };
         rule.Prepare();
 
-        var context = new Dictionary<string, object> { { "test_key", userVal } };
+        var context = new ApolloContext("user_123")
+        {
+            { "test_key", userVal }
+        };
 
         var result = _evaluator.Evaluate(rule, context);
 

@@ -24,7 +24,11 @@ public class CustomAttributeTests
             Operator = "equals",
             Value = "9"
         };
-        var context = new Dictionary<string, object> { { "vip_level", "9" } };
+
+        var context = new ApolloContext("user_123")
+        {
+            { "vip_level", "9" }
+        };
 
         Assert.True(_evaluator.Evaluate(rule, context));
     }
