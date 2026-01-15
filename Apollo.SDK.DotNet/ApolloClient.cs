@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 
+using Apollo.SDK.DotNet.Interfaces;
 using Apollo.SDK.DotNet.Models;
 
 namespace Apollo.SDK.DotNet;
@@ -8,47 +9,84 @@ namespace Apollo.SDK.DotNet;
 /// <summary>
 /// Apollo 客户端，用于管理开关配置和评估规则
 /// </summary>
-public class ApolloClient
+public class ApolloClient : IApolloClient
 {
     #region 核心成员
     // 存储开关配置
     private readonly ConcurrentDictionary<string, Toggle> _toggles = new();
     // 规则执行器
     private readonly RuleEvaluator _evaluator = new();
+    // 文件系统监视器
+    private readonly FileSystemWatcher _watcher;
     #endregion
 
     #region 初始化
-
+    /// <summary>
+    /// 构造时加载配置
+    /// </summary>
+    /// <param name="options">客户端配置</param>
     public ApolloClient(ApolloOptions options)
     {
         SetTogglesPath(options.TogglesPath);
+
+        // 热更新配置
+        _watcher = new FileSystemWatcher(options.TogglesPath, "*.json")
+        {
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName,
+        };
+        _watcher.Created += (s, e) => OnChanged(options.TogglesPath, e);
+        _watcher.Deleted += (s, e) => OnChanged(options.TogglesPath, e);
+        _watcher.Changed += (s, e) => OnChanged(options.TogglesPath, e);
+        _watcher.Renamed += (s, e) => OnChanged(options.TogglesPath, e);
+    }
+
+    /// <summary>
+    /// 热更新防抖
+    /// </summary>
+    /// <param name="sender">路径</param>
+    /// <param name="e"></param>
+    private void OnChanged(object sender, EventArgs e)
+    {
+        Thread.Sleep(100);
+        SetTogglesPath((string)sender);
     }
 
     /// <summary>
     /// 加载开关配置文件
     /// </summary>
     /// <param name="directoryPath">开关配置文件路径</param>
-    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="DirectoryNotFoundException">路径不存在</exception>
+    /// <exception cref="FileNotFoundException">配置文件未找到</exception>
+    /// <exception cref="FileLoadException">配置文件加载失败</exception>
     private void SetTogglesPath(string directoryPath)
     {
         if (!Directory.Exists(directoryPath))
             throw new DirectoryNotFoundException($"Path not found: {directoryPath}");
 
         var files = Directory.GetFiles(directoryPath, "*.json");
+        if (files.Length == 0)
+            throw new FileNotFoundException($"File not found: {directoryPath}");
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         foreach (var file in files)
         {
-            var content = File.ReadAllText(file);
-            var toggle = JsonSerializer.Deserialize<Toggle>(content, options);
-
-            // 预处理 between
-            toggle?.Initialize();
-
-            if (toggle?.Key != null)
+            try
             {
-                _toggles[toggle.Key] = toggle;
+                var content = File.ReadAllText(file);
+                var toggle = JsonSerializer.Deserialize<Toggle>(content, options);
+
+                // 预处理 between
+                toggle?.Initialize();
+
+                if (toggle?.Key != null)
+                {
+                    _toggles[toggle.Key] = toggle;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new FileLoadException($"Failed to load toggle from file: {file}", ex);
             }
         }
     }
@@ -59,16 +97,18 @@ public class ApolloClient
     /// 判断是否符合
     /// </summary>
     /// <param name="key">开关 Key</param>
-    /// <param name="userId">用户ID</param>
     /// <param name="context">上下文参数</param>
     /// <returns>是否符合开关条件</returns>
-    /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
     public bool IsToggleAllowed(string key, ApolloContext context)
     {
         if (!_toggles.TryGetValue(key, out var toggle))
-            throw new KeyNotFoundException($"Toggle not found: {key}");
+        {
+            // 静默失败
+            Console.WriteLine($"Toggle not found: {key}");
+            return false;
+        }
         if (toggle.Status != "enabled")
-            return true;
+            return false;
 
         // 添加 userId 到上下文
         if (!context.ContainsKey("traffic"))
