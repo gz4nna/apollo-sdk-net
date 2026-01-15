@@ -18,12 +18,18 @@ public class ApolloClient
     #endregion
 
     #region 初始化
+
+    public ApolloClient(ApolloOptions options)
+    {
+        SetTogglesPath(options.TogglesPath);
+    }
+
     /// <summary>
     /// 加载开关配置文件
     /// </summary>
     /// <param name="directoryPath">开关配置文件路径</param>
     /// <exception cref="DirectoryNotFoundException"></exception>
-    public void SetTogglesPath(string directoryPath)
+    private void SetTogglesPath(string directoryPath)
     {
         if (!Directory.Exists(directoryPath))
             throw new DirectoryNotFoundException($"Path not found: {directoryPath}");
@@ -57,7 +63,7 @@ public class ApolloClient
     /// <param name="context">上下文参数</param>
     /// <returns>是否符合开关条件</returns>
     /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
-    public bool IsToggleAllow(string key, string userId, Dictionary<string, object> context)
+    public bool IsToggleAllowed(string key, ApolloContext context)
     {
         if (!_toggles.TryGetValue(key, out var toggle))
             throw new KeyNotFoundException($"Toggle not found: {key}");
@@ -65,11 +71,9 @@ public class ApolloClient
             return true;
 
         // 添加 userId 到上下文
-        context["user_id"] = userId;
-        // 同时 traffic 使用的也是 userId
         if (!context.ContainsKey("traffic"))
         {
-            context["traffic"] = userId;
+            context["traffic"] = context["user_id"];
         }
 
         return toggle.Audiences.Any(audience =>

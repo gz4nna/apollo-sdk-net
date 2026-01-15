@@ -55,7 +55,7 @@ public class RuleEvaluator
     /// <param name="rule">规则</param>
     /// <param name="context">上下文参数</param>
     /// <returns>是否符合规则</returns>
-    public bool Evaluate(Rule rule, Dictionary<string, object> context)
+    public bool Evaluate(Rule rule, ApolloContext context)
     {
         if (!context.TryGetValue(rule.EffectiveAttribute, out var actualValue))
             return false;
