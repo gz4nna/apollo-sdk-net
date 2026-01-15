@@ -1,4 +1,5 @@
-﻿using Apollo.SDK.DotNet.Models;
+﻿using Apollo.SDK.DotNet.Algorithms;
+using Apollo.SDK.DotNet.Models;
 
 namespace Apollo.SDK.DotNet;
 

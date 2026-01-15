@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Apollo.SDK.DotNet;
+namespace Apollo.SDK.DotNet.Algorithms;
 
 /// <summary>
 /// MurmurHash3 实现
