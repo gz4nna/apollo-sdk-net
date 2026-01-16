@@ -1,7 +1,7 @@
-﻿using Apollo.SDK.DotNet.Algorithms;
-using Apollo.SDK.DotNet.Models;
+﻿using Apollo.SDK.NET.Algorithms;
+using Apollo.SDK.NET.Models;
 
-namespace Apollo.SDK.DotNet;
+namespace Apollo.SDK.NET;
 
 /// <summary>
 /// 规则执行器

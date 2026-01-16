@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Apollo.SDK.DotNet.Models;
+namespace Apollo.SDK.NET.Models;
 
 /// <summary>
 /// 规则

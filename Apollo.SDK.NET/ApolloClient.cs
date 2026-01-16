@@ -1,10 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 
-using Apollo.SDK.DotNet.Interfaces;
-using Apollo.SDK.DotNet.Models;
+using Apollo.SDK.DotNet;
+using Apollo.SDK.NET.Interfaces;
+using Apollo.SDK.NET.Models;
 
-namespace Apollo.SDK.DotNet;
+namespace Apollo.SDK.NET;
 
 /// <summary>
 /// Apollo 客户端，用于管理开关配置和评估规则

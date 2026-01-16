@@ -1,4 +1,4 @@
-﻿namespace Apollo.SDK.DotNet;
+﻿namespace Apollo.SDK.NET;
 
 /// <summary>
 /// 用户输入上下文

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-using Apollo.SDK.DotNet.Models;
+using Apollo.SDK.NET.Models;
 
 namespace Apollo.SDK.DotNet;
 

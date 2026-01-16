@@ -1,4 +1,4 @@
-﻿namespace Apollo.SDK.DotNet.Samples;
+﻿namespace Apollo.SDK.NET.Samples;
 
 public class Program
 {

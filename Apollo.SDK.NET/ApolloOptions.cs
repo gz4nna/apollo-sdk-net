@@ -1,4 +1,4 @@
-﻿namespace Apollo.SDK.DotNet;
+﻿namespace Apollo.SDK.NET;
 
 /// <summary>
 /// 客户端配置选项

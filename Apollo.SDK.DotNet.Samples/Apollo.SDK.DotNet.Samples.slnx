@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="../Apollo.SDK.DotNet.Tests/Apollo.SDK.DotNet.Tests.csproj" />
-  <Project Path="../Apollo.SDK.DotNet/Apollo.SDK.DotNet.csproj" />
-  <Project Path="Apollo.SDK.DotNet.Samples.csproj" />
-</Solution>

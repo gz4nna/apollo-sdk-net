@@ -1,6 +1,6 @@
-﻿using Apollo.SDK.DotNet.Models;
+﻿using Apollo.SDK.NET.Models;
 
-namespace Apollo.SDK.DotNet.Tests;
+namespace Apollo.SDK.NET.Tests;
 
 /// <summary>
 /// 自定义属性测试

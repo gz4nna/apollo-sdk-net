@@ -1,6 +1,6 @@
-﻿using Apollo.SDK.DotNet.Models;
+﻿using Apollo.SDK.NET.Models;
 
-namespace Apollo.SDK.DotNet.Interfaces;
+namespace Apollo.SDK.NET.Interfaces;
 
 /// <summary>
 /// 定义 Apollo 客户端的接口

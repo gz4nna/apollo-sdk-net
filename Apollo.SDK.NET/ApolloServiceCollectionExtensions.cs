@@ -1,5 +1,5 @@
-﻿using Apollo.SDK.DotNet;
-using Apollo.SDK.DotNet.Interfaces;
+﻿using Apollo.SDK.NET;
+using Apollo.SDK.NET.Interfaces;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -14,12 +14,9 @@ public static class ApolloServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="configureOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddApollo(this IServiceCollection services, Action<ApolloOptions> configureOptions)
+    public static IServiceCollection AddApollo(this IServiceCollection services, ApolloOptions configureOptions)
     {
-        var options = new ApolloOptions();
-        configureOptions(options);
-
-        _ = services.AddSingleton<IApolloClient>(serviceProvider => new ApolloClient(options));
+        _ = services.AddSingleton<IApolloClient>(serviceProvider => new ApolloClient(configureOptions));
 
         return services;
     }
