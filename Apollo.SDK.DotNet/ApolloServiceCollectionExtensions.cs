@@ -8,6 +8,12 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class ApolloServiceCollectionExtensions
 {
+    /// <summary>
+    /// 注入 Apollo 客户端服务
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configureOptions"></param>
+    /// <returns></returns>
     public static IServiceCollection AddApollo(this IServiceCollection services, Action<ApolloOptions> configureOptions)
     {
         var options = new ApolloOptions();

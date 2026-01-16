@@ -1,4 +1,6 @@
-﻿namespace Apollo.SDK.DotNet.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace Apollo.SDK.DotNet.Models;
 
 /// <summary>
 /// 规则
@@ -8,26 +10,31 @@ public class Rule
     /// <summary>
     /// 规则 Id
     /// </summary>
+    [JsonPropertyName("id")]
     public required string Id { get; set; }
 
     /// <summary>
     /// 规则 属性
     /// </summary>
+    [JsonPropertyName("attribute")]
     public required string Attribute { get; set; }
 
     /// <summary>
     /// 规则 操作符
     /// </summary>
+    [JsonPropertyName("operator")]
     public required string Operator { get; set; }
 
     /// <summary>
     /// 规则 值
     /// </summary>
+    [JsonPropertyName("value")]
     public required string Value { get; set; }
 
     /// <summary>
     /// 规则 自定义属性
     /// </summary>
+    [JsonPropertyName("customAttribute")]
     public string? CustomAttribute { get; set; }
 
     /// <summary>

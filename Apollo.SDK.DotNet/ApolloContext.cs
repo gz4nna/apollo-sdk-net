@@ -1,5 +1,8 @@
 ﻿namespace Apollo.SDK.DotNet;
 
+/// <summary>
+/// 用户输入上下文
+/// </summary>
 public class ApolloContext : Dictionary<string, object>
 {
     public ApolloContext(string userId)

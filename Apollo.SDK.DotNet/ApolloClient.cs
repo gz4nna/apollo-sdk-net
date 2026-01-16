@@ -67,14 +67,14 @@ public class ApolloClient : IApolloClient
         if (files.Length == 0)
             throw new FileNotFoundException($"File not found: {directoryPath}");
 
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        // var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         foreach (var file in files)
         {
             try
             {
                 var content = File.ReadAllText(file);
-                var toggle = JsonSerializer.Deserialize<Toggle>(content, options);
+                var toggle = JsonSerializer.Deserialize(content, ApolloJsonSerializerContext.Default.Toggle);
 
                 // 预处理 between
                 toggle?.Initialize();
