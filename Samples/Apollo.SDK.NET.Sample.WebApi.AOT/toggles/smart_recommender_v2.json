@@ -1,0 +1,29 @@
+{
+  "id": "tg_1",
+  "name": "智能推荐算法 v2",
+  "key": "smart_recommender_v2",
+  "description": "基于用户行为路径的新型推荐引擎，旨在提高点击率。",
+  "status": "enabled",
+  "createdAt": "2024-03-20",
+  "updatedAt": "2026-01-14",
+  "audiences": [
+    {
+      "id": "aud_1",
+      "name": "北京/上海核心测试用户",
+      "rules": [
+        {
+          "id": "r1",
+          "attribute": "city",
+          "operator": "in",
+          "value": "Beijing,Shanghai"
+        },
+        {
+          "id": "r2",
+          "attribute": "traffic",
+          "operator": "lt",
+          "value": "20"
+        }
+      ]
+    }
+  ]
+}

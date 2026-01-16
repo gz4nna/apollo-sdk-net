@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Apollo.SDK.NET.Tests/Apollo.SDK.NET.Tests.csproj" />
+  <Project Path="Apollo.SDK.NET/Apollo.SDK.NET.csproj" />
+  <Project Path="Samples/Apollo.SDK.NET.Sample.WebApi.AOT/Apollo.SDK.NET.Sample.WebApi.AOT.csproj" Id="87fdc26e-dc5f-43b9-ba6b-f836586555c5" />
+  <Project Path="Samples/Apollo.SDK.NET.Sample/Apollo.SDK.NET.Sample.csproj" />
+</Solution>

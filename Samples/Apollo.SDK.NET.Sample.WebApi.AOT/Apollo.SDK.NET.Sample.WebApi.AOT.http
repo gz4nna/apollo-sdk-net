@@ -1,0 +1,11 @@
+@Apollo.SDK.NET.Sample.WebApi.AOT_HostAddress = http://localhost:5055
+
+GET {{Apollo.SDK.NET.Sample.WebApi.AOT_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{Apollo.SDK.NET.Sample.WebApi.AOT_HostAddress}}/todos/1
+Accept: application/json
+
+###
