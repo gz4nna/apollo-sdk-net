@@ -1,6 +1,6 @@
 # apollo-sdk-net
 
-如果你用了 `ricejson/apollo-frontend` 来实现你的灰度测试，那么可以使用这款 SDK 来完成在 .NET 中的配置解析。
+如果你用了 [ricejson/apollo-frontend](https://github.com/ricejson/apollo-frontend) 来实现你的灰度发布，那么可以使用这款 SDK 来完成在 .NET 中的配置解析和人群校验。
 
 目前已可支持：
 - 依赖注入
