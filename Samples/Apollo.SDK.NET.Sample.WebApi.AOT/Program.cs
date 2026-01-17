@@ -34,15 +34,6 @@ builder.Services.AddApollo(new()
 
 var app = builder.Build();
 
-//var apolloClient = app.Services.GetService<IApolloClient>();
-
-//var context = new ApolloContext("user_123")
-//        .Set("city", "Beijing");
-
-//var key = "smart_recommender_v2";
-
-//bool? enabled = apolloClient?.IsToggleAllowed(key, context);
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -69,10 +60,14 @@ todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
 
 app.MapGet("/check/{key}", (string key, IApolloClient apollo) =>
 {
-    var context = new ApolloContext("user_123")
-        .Set("city", "Beijing");
+    var apolloClient = app.Services.GetService<IApolloClient>();
 
-    var enabled = apollo.IsToggleAllowed(key, context);
+    var context = new ApolloContext("user_123")
+            .Set("city", "Beijing");
+
+    var toggleKey = "smart_recommender_v2";
+
+    bool? enabled = apolloClient?.IsToggleAllowed(toggleKey, context);
 
     return Results.Ok();
 });
