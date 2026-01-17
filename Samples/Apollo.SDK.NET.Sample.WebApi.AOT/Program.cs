@@ -1,8 +1,22 @@
 using System.Text.Json.Serialization;
 
+using Apollo.SDK.NET;
+using Apollo.SDK.NET.Interfaces;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 
+using Serilog;
+
 var builder = WebApplication.CreateSlimBuilder(args);
+
+//builder.Logging.AddConsole();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -11,13 +25,23 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-// 注册 Apollo 客户端服务
+
+// 注册 Apollo 客户端服务，请在配置 Logger 之后注册
 builder.Services.AddApollo(new()
 {
     TogglesPath = Path.Combine(Environment.CurrentDirectory, "toggles")
 });
 
 var app = builder.Build();
+
+//var apolloClient = app.Services.GetService<IApolloClient>();
+
+//var context = new ApolloContext("user_123")
+//        .Set("city", "Beijing");
+
+//var key = "smart_recommender_v2";
+
+//bool? enabled = apolloClient?.IsToggleAllowed(key, context);
 
 if (app.Environment.IsDevelopment())
 {
@@ -43,7 +67,24 @@ todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
         : TypedResults.NotFound())
     .WithName("GetTodoById");
 
-app.Run();
+app.MapGet("/check/{key}", (string key, IApolloClient apollo) =>
+{
+    var context = new ApolloContext("user_123")
+        .Set("city", "Beijing");
+
+    var enabled = apollo.IsToggleAllowed(key, context);
+
+    return Results.Ok();
+});
+
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 

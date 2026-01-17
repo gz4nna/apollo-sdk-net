@@ -2,7 +2,7 @@
 
 using Apollo.SDK.NET.Models;
 
-namespace Apollo.SDK.DotNet;
+namespace Apollo.SDK.NET;
 
 /// <summary>
 /// 源生成器序列化上下文

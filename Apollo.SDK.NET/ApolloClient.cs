@@ -1,9 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 
-using Apollo.SDK.DotNet;
 using Apollo.SDK.NET.Interfaces;
 using Apollo.SDK.NET.Models;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Apollo.SDK.NET;
 
@@ -16,9 +18,13 @@ public class ApolloClient : IApolloClient
     // 存储开关配置
     private readonly ConcurrentDictionary<string, Toggle> _toggles = new();
     // 规则执行器
-    private readonly RuleEvaluator _evaluator = new();
+    private readonly RuleEvaluator _evaluator;
     // 文件系统监视器
     private readonly FileSystemWatcher _watcher;
+    // 日志工厂
+    private readonly ILoggerFactory _loggerFactory;
+    // 日志记录器
+    private readonly ILogger<ApolloClient> _logger;
     #endregion
 
     #region 初始化
@@ -26,8 +32,16 @@ public class ApolloClient : IApolloClient
     /// 构造时加载配置
     /// </summary>
     /// <param name="options">客户端配置</param>
-    public ApolloClient(ApolloOptions options)
+    /// <param name="loggerFactory">日志工厂</param>
+    public ApolloClient(ApolloOptions options, ILoggerFactory? loggerFactory = null)
     {
+        _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+        _logger = _loggerFactory.CreateLogger<ApolloClient>();
+        _logger.LogInformation("Initializing ApolloClient...");
+
+        var evaluatorLogger = _loggerFactory.CreateLogger<RuleEvaluator>();
+        _evaluator = new RuleEvaluator(evaluatorLogger);
+
         SetTogglesPath(options.TogglesPath);
 
         // 热更新配置
@@ -48,6 +62,7 @@ public class ApolloClient : IApolloClient
     /// <param name="e"></param>
     private void OnChanged(object sender, EventArgs e)
     {
+        _logger.LogInformation("Detected changes in toggle configuration. Reloading...");
         Thread.Sleep(100);
         SetTogglesPath((string)sender);
     }
@@ -62,13 +77,17 @@ public class ApolloClient : IApolloClient
     private void SetTogglesPath(string directoryPath)
     {
         if (!Directory.Exists(directoryPath))
+        {
+            _logger.LogError($"Directory not found: {directoryPath}");
             throw new DirectoryNotFoundException($"Path not found: {directoryPath}");
+        }
 
         var files = Directory.GetFiles(directoryPath, "*.json");
         if (files.Length == 0)
+        {
+            _logger.LogError($"No toggle configuration files found in directory: {directoryPath}");
             throw new FileNotFoundException($"File not found: {directoryPath}");
-
-        // var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        }
 
         foreach (var file in files)
         {
@@ -87,6 +106,7 @@ public class ApolloClient : IApolloClient
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"Failed to load toggle from file: {file}");
                 throw new FileLoadException($"Failed to load toggle from file: {file}", ex);
             }
         }
@@ -99,11 +119,15 @@ public class ApolloClient : IApolloClient
         if (!_toggles.TryGetValue(key, out var toggle))
         {
             // 静默失败
-            Console.WriteLine($"Toggle not found: {key}");
+            _logger.LogWarning($"Toggle not found: {key}");
             return false;
         }
+
         if (toggle.Status != "enabled")
+        {
+            _logger.LogWarning($"Toggle is disabled: {key}");
             return false;
+        }
 
         // 添加 userId 到上下文
         if (!context.ContainsKey("traffic"))
@@ -131,7 +155,9 @@ public class ApolloClient : IApolloClient
         {
             return toggle.Audiences.Any(a => a.Id == audienceId);
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        // 静默失败
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return false;
     }
 
     public bool IsRuleExist(string toggleKey, string audienceId, string ruleId)
@@ -143,9 +169,11 @@ public class ApolloClient : IApolloClient
             {
                 return audience.Rules.Any(r => r.Id == ruleId);
             }
-            throw new KeyNotFoundException($"Audience not found: {audienceId}");
+            _logger.LogWarning($"Audience not found: {audienceId}");
+            return false;
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return false;
     }
     #endregion
 
@@ -156,7 +184,8 @@ public class ApolloClient : IApolloClient
         {
             return toggle.Status == "enabled";
         }
-        throw new KeyNotFoundException($"Toggle not found: {key}");
+        _logger.LogWarning($"Toggle not found: {key}");
+        return false;
     }
     #endregion
 
@@ -172,7 +201,8 @@ public class ApolloClient : IApolloClient
         {
             return toggle.Audiences.Count;
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return 0;
     }
 
     public int GetRuleCount(string toggleKey, string audienceId)
@@ -184,9 +214,11 @@ public class ApolloClient : IApolloClient
             {
                 return audience.Rules.Count;
             }
-            throw new KeyNotFoundException($"Audience not found: {audienceId}");
+            _logger.LogWarning($"Audience not found: {audienceId}");
+            return 0;
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return 0;
     }
     #endregion
 
@@ -202,7 +234,8 @@ public class ApolloClient : IApolloClient
         {
             return [.. toggle.Audiences.Select(a => a.Id)];
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return [];
     }
 
     public List<string> GetRuleIds(string toggleKey, string audienceId)
@@ -214,9 +247,11 @@ public class ApolloClient : IApolloClient
             {
                 return [.. audience.Rules.Select(r => r.Id)];
             }
-            throw new KeyNotFoundException($"Audience not found: {audienceId}");
+            _logger.LogWarning($"Audience not found: {audienceId}");
+            return [];
         }
-        throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
+        _logger.LogWarning($"Toggle not found: {toggleKey}");
+        return [];
     }
     #endregion
 
@@ -227,6 +262,8 @@ public class ApolloClient : IApolloClient
         {
             return toggle;
         }
+
+        _logger.LogError($"Toggle not found: {key}");
         throw new KeyNotFoundException($"Toggle not found: {key}");
     }
 
@@ -239,8 +276,12 @@ public class ApolloClient : IApolloClient
             {
                 return audience;
             }
+
+            _logger.LogError($"Audience not found: {audienceId}");
             throw new KeyNotFoundException($"Audience not found: {audienceId}");
         }
+
+        _logger.LogError($"Toggle not found: {toggleKey}");
         throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
     }
 
@@ -256,10 +297,16 @@ public class ApolloClient : IApolloClient
                 {
                     return rule;
                 }
+
+                _logger.LogError($"Rule not found: {ruleId}");
                 throw new KeyNotFoundException($"Rule not found: {ruleId}");
             }
+
+            _logger.LogError($"Audience not found: {audienceId}");
             throw new KeyNotFoundException($"Audience not found: {audienceId}");
         }
+
+        _logger.LogError($"Toggle not found: {toggleKey}");
         throw new KeyNotFoundException($"Toggle not found: {toggleKey}");
     }
     #endregion

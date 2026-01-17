@@ -31,7 +31,6 @@ public interface IApolloClient
     /// <param name="toggleKey">开关 Key</param>
     /// <param name="audienceId">群组 ID</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
     bool IsAudienceExist(string toggleKey, string audienceId);
 
     /// <summary>
@@ -41,7 +40,6 @@ public interface IApolloClient
     /// <param name="audienceId">群组 ID</param>
     /// <param name="ruleId">规则 ID</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关或群组不存在时抛出</exception>
     bool IsRuleExist(string toggleKey, string audienceId, string ruleId);
     #endregion
 
@@ -51,7 +49,6 @@ public interface IApolloClient
     /// </summary>
     /// <param name="key">开关 Key</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
     bool GetToggleStatus(string key);
     #endregion
 
@@ -67,7 +64,6 @@ public interface IApolloClient
     /// </summary>
     /// <param name="toggleKey">开关 Key</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
     int GetAudienceCount(string toggleKey);
 
     /// <summary>
@@ -76,7 +72,6 @@ public interface IApolloClient
     /// <param name="toggleKey">开关 Key</param>
     /// <param name="audienceId">群组 ID</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关或群组不存在时抛出</exception>
     int GetRuleCount(string toggleKey, string audienceId);
     #endregion
 
@@ -92,7 +87,6 @@ public interface IApolloClient
     /// </summary>
     /// <param name="toggleKey">开关 Key</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关不存在时抛出</exception>
     List<string> GetAudienceIds(string toggleKey);
 
     /// <summary>
@@ -101,7 +95,6 @@ public interface IApolloClient
     /// <param name="toggleKey">开关 Key</param>
     /// <param name="audienceId">群组 ID</param>
     /// <returns></returns>
-    /// <exception cref="KeyNotFoundException">当开关或群组不存在时抛出</exception>
     List<string> GetRuleIds(string toggleKey, string audienceId);
     #endregion
 

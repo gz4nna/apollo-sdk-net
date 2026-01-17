@@ -1,6 +1,8 @@
 ﻿using Apollo.SDK.NET;
 using Apollo.SDK.NET.Interfaces;
 
+using Microsoft.Extensions.Logging;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -16,7 +18,12 @@ public static class ApolloServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddApollo(this IServiceCollection services, ApolloOptions configureOptions)
     {
-        _ = services.AddSingleton<IApolloClient>(serviceProvider => new ApolloClient(configureOptions));
+        _ = services.AddSingleton<IApolloClient>(serviceProvider =>
+            {
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                return new ApolloClient(configureOptions, loggerFactory);
+            }
+        );
 
         return services;
     }

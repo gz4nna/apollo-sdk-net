@@ -1,6 +1,9 @@
 ﻿using Apollo.SDK.NET.Algorithms;
 using Apollo.SDK.NET.Models;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 namespace Apollo.SDK.NET;
 
 /// <summary>
@@ -9,9 +12,13 @@ namespace Apollo.SDK.NET;
 public class RuleEvaluator
 {
     private readonly Dictionary<string, Func<Rule, object, bool>> _operators;
+    private readonly ILogger<RuleEvaluator> _logger;
 
-    public RuleEvaluator()
+    public RuleEvaluator(ILogger<RuleEvaluator>? logger = null)
     {
+        _logger = logger ?? NullLogger<RuleEvaluator>.Instance;
+        _logger.LogInformation("Initializing RuleEvaluator...");
+
         _operators = new Dictionary<string, Func<Rule, object, bool>>
         {
             { "equals", (rule, actVal) => actVal?.ToString() == rule.Value },
@@ -59,7 +66,10 @@ public class RuleEvaluator
     public bool Evaluate(Rule rule, ApolloContext context)
     {
         if (!context.TryGetValue(rule.EffectiveAttribute, out var actualValue))
+        {
+            _logger.LogError("Attribute {Attribute} not found in context.", rule.EffectiveAttribute);
             return false;
+        }
 
         // 如果 EffectiveAttribute 是 traffic，则在这里做加盐哈希
         if (rule.EffectiveAttribute == "traffic")
@@ -78,11 +88,13 @@ public class RuleEvaluator
             {
                 return func(rule, actualValue);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error evaluating rule {RuleId} with operator {Operator}.", rule.Id, rule.Operator);
                 return false;
             }
         }
+        _logger.LogError("Operator {Operator} not supported.", rule.Operator);
         return false;
     }
 }
