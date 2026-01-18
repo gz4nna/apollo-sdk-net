@@ -37,6 +37,8 @@ public class OperatorTests
     [InlineData("gt", "30", 20, false)]
     [InlineData("gt", "30", 30, false)]
     [InlineData("gt", "30", 40, true)]
+    [InlineData("gt", "30.0", 30.00000000000001, true)]
+    [InlineData("gt", "30.00000000000001", 30.000000, false)]
     #endregion
 
     #region lt

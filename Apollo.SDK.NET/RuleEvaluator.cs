@@ -23,8 +23,20 @@ public class RuleEvaluator
         {
             { "equals", (rule, actVal) => actVal?.ToString() == rule.Value },
             { "not_equals", (rule, actVal) => actVal?.ToString() != rule.Value },
-            { "gt", (rule, actVal) => Convert.ToDouble(actVal) > Convert.ToDouble(rule.Value) },
-            { "lt", (rule, actVal) => Convert.ToDouble(actVal) < Convert.ToDouble(rule.Value) },
+            { "gt", (rule, actVal) =>
+                {
+                    if(rule.GetParsedValue() is not double value)
+                        return Convert.ToDouble(actVal) > Convert.ToDouble(rule.Value);
+                    return Convert.ToDouble(actVal) > value;
+                }
+            },
+            { "lt", (rule, actVal) =>
+                {
+                    if(rule.GetParsedValue() is not double value)
+                        return Convert.ToDouble(actVal) < Convert.ToDouble(rule.Value);
+                    return Convert.ToDouble(actVal) < value;
+                }
+            },
             { "contains", (rule, actVal) => actVal?.ToString()?.Contains(rule.Value) ?? false },
             { "in", (rule, actVal) =>
                 {

@@ -63,6 +63,19 @@ public class Rule
 
         switch (Operator)
         {
+            case "lt":
+                // 预编译数值
+                if (double.TryParse(Value, out double ltValue))
+                {
+                    _parsedValue = ltValue;
+                }
+                break;
+            case "gt":
+                if (double.TryParse(Value, out double gtValue))
+                {
+                    _parsedValue = gtValue;
+                }
+                break;
             case "between":
                 var parts = Value.Split(',');
                 if (parts.Length == 2 &&
