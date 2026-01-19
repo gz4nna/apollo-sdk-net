@@ -225,17 +225,17 @@ public class ApolloClient : IApolloClient
     #region 列表获取
     public List<string> GetAllToggleKeys()
     {
-        return [.. _toggles.Keys];
+        return new(_toggles.Keys);
     }
 
     public List<string> GetAudienceIds(string toggleKey)
     {
         if (_toggles.TryGetValue(toggleKey, out var toggle))
         {
-            return [.. toggle.Audiences.Select(a => a.Id)];
+            return toggle.Audiences.Select(a => a.Id).ToList();
         }
         _logger.LogWarning($"Toggle not found: {toggleKey}");
-        return [];
+        return new();
     }
 
     public List<string> GetRuleIds(string toggleKey, string audienceId)
@@ -245,13 +245,13 @@ public class ApolloClient : IApolloClient
             var audience = toggle.Audiences.FirstOrDefault(a => a.Id == audienceId);
             if (audience != null)
             {
-                return [.. audience.Rules.Select(r => r.Id)];
+                return audience.Rules.Select(r => r.Id).ToList();
             }
             _logger.LogWarning($"Audience not found: {audienceId}");
-            return [];
+            return new();
         }
         _logger.LogWarning($"Toggle not found: {toggleKey}");
-        return [];
+        return new();
     }
     #endregion
 

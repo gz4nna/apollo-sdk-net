@@ -11,17 +11,17 @@ public class Audience
     /// 群组 Id
     /// </summary>
     [JsonPropertyName("id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     /// <summary>
     /// 群组 名称
     /// </summary>
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// 群组 规则集
     /// </summary>
     [JsonPropertyName("rules")]
-    public List<Rule> Rules { get; set; } = [];
+    public List<Rule> Rules { get; set; } = new();
 }

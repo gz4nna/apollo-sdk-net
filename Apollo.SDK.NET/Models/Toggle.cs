@@ -11,19 +11,19 @@ public class Toggle
     /// 开关 Id
     /// </summary>
     [JsonPropertyName("id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     /// <summary>
     /// 开关名称
     /// </summary>
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// 开关 Key
     /// </summary>
     [JsonPropertyName("key")]
-    public required string Key { get; set; }
+    public string Key { get; set; }
 
     /// <summary>
     /// 开关描述
@@ -35,25 +35,25 @@ public class Toggle
     /// 开关 状态
     /// </summary>
     [JsonPropertyName("status")]
-    public required string Status { get; set; }
+    public string Status { get; set; }
 
     /// <summary>
     /// 开关 创建时间
     /// </summary>
     [JsonPropertyName("createdAt")]
-    public required DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// 开关 更新时间
     /// </summary>
     [JsonPropertyName("updatedAt")]
-    public required DateTime UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     /// <summary>
     /// 开关 群组集
     /// </summary>
     [JsonPropertyName("audiences")]
-    public List<Audience> Audiences { get; set; } = [];
+    public List<Audience> Audiences { get; set; } = new();
 
     public void Initialize()
     {
