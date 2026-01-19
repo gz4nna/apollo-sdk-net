@@ -6,6 +6,7 @@
 - 依赖注入
 - 自定义日志接入
 - AOT 模式
+- `.NET6` / `.NET8` / `.NET10`
 
 ## 如何使用
 
@@ -58,7 +59,11 @@ if (client.IsToggleAllowed("smart_recommender_v2", context))
 
 ## TODO
 
+- ~~预编译优化~~
+- ~~支持依赖注入~~
+- ~~兼容 AOT 模式~~
+- ~~支持日志接入~~
+- ~~.NET 版本兼容~~
 - 支持远程判断
 - 内存分配优化
 - 异步流处理优化
-- .NET 版本兼容
