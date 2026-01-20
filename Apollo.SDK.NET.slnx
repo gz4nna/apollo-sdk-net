@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="Apollo.SDK.NET.Benchmarks/Apollo.SDK.NET.Benchmarks.csproj" Id="65d0c7f5-ff6e-4b35-85c0-5aede97d38f4">
+    <BuildType Project="Release" />
+  </Project>
   <Project Path="Apollo.SDK.NET.Tests/Apollo.SDK.NET.Tests.csproj" />
   <Project Path="Apollo.SDK.NET/Apollo.SDK.NET.csproj" />
   <Project Path="Samples/Apollo.SDK.NET.Sample.WebApi.AOT/Apollo.SDK.NET.Sample.WebApi.AOT.csproj" Id="87fdc26e-dc5f-43b9-ba6b-f836586555c5" />
