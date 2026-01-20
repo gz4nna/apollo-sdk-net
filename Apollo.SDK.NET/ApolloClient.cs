@@ -18,7 +18,7 @@ public class ApolloClient : IApolloClient
     // 存储开关配置
     private readonly ConcurrentDictionary<string, Toggle> _toggles = new();
     // 规则执行器
-    private readonly RuleEvaluator _evaluator;
+    //private readonly RuleEvaluator _evaluator;
     // 文件系统监视器
     private readonly FileSystemWatcher _watcher;
     // 日志工厂
@@ -40,7 +40,7 @@ public class ApolloClient : IApolloClient
         _logger.LogInformation("Initializing ApolloClient...");
 
         var evaluatorLogger = _loggerFactory.CreateLogger<RuleEvaluator>();
-        _evaluator = new RuleEvaluator(evaluatorLogger);
+        //_evaluator = new RuleEvaluator(evaluatorLogger);
 
         SetTogglesPath(options.TogglesPath);
 
@@ -119,27 +119,36 @@ public class ApolloClient : IApolloClient
         if (!_toggles.TryGetValue(key, out var toggle))
         {
             // 静默失败
-            _logger.LogWarning($"Toggle not found: {key}");
+            //_logger.LogWarning($"Toggle not found: {key}");
             return false;
         }
 
         if (toggle.Status != "enabled")
         {
-            _logger.LogWarning($"Toggle is disabled: {key}");
+            //_logger.LogWarning($"Toggle is disabled: {key}");
             return false;
         }
 
-        // 添加 userId 到上下文
-        if (!context.ContainsKey("traffic"))
+        var audiences = toggle.Audiences;
+        for (int i = 0; i < audiences.Count; i++)
         {
-            context["traffic"] = context["user_id"];
+            var audience = audiences[i];
+            var rules = audience.Rules;
+            bool allRulesPassed = true;
+
+            for (int j = 0; j < rules.Count; j++)
+            {
+                if (!RuleEvaluator.Evaluate(rules[j], context))
+                {
+                    allRulesPassed = false;
+                    break;
+                }
+            }
+
+            if (allRulesPassed) return true;
         }
 
-        return toggle.Audiences.Any(audience =>
-            audience.Rules.All(rule =>
-                _evaluator.Evaluate(rule, context)
-            )
-        );
+        return false;
     }
     #endregion
 

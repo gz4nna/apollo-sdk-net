@@ -26,9 +26,11 @@ public class ApolloClientBenchmark
                 ""audiences"": [
                     {
                         ""rules"": [
-                            { ""attribute"": ""city"", ""operator"": ""eq"", ""values"": [""Beijing""] },
-                            { ""attribute"": ""age"", ""operator"": ""gt"", ""values"": [""18""] },
-                            { ""attribute"": ""traffic"", ""operator"": ""lt"", ""values"": [""50""] }
+                            { ""attribute"": ""city"", ""operator"": ""equals"", ""values"": [""Beijing""] },
+                            { ""attribute"": ""custom"",""CustomAttribute"": ""age"", ""operator"": ""gt"", ""values"": [""18""] },
+                            { ""attribute"": ""traffic"", ""operator"": ""lt"", ""values"": [""50""] },
+                            { ""attribute"": ""city"", ""operator"": ""in"", ""values"": [""Beijing,Shanghai""]},
+                            { ""attribute"": ""custom"",""CustomAttribute"": ""age"", ""operator"": ""between"", ""values"": [""1,100""] }
                         ]
                     }
                 ]

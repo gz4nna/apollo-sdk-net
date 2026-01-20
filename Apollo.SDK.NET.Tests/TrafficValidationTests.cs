@@ -24,15 +24,15 @@ public class TrafficValidationTests
 
         rule.Prepare();
 
-        var evaluator = new RuleEvaluator();
         int hitCount = 0;
         int totalUserCount = 100000;
 
         for (int i = 0; i < totalUserCount; i++)
         {
             var userId = $"user_{i}";
-            var context = new ApolloContext(userId) { { "traffic", userId } };
-            if (evaluator.Evaluate(rule, context))
+            var context = new ApolloContext(userId);
+
+            if (RuleEvaluator.Evaluate(rule, context))
             {
                 hitCount++;
             }

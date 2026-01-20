@@ -6,7 +6,21 @@
 - 依赖注入
 - 自定义日志接入
 - AOT 模式
-- `.NET6` / `.NET8` / `.NET10`
+- 兼容 `.NET6` / `.NET8` / `.NET10`
+- 零内存分配
+
+
+```
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.7623/25H2/2025Update/HudsonValley2)
+11th Gen Intel Core i9-11900KF 3.50GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK 10.0.102
+  [Host]     : .NET 10.0.2 (10.0.2, 10.0.225.61305), X64 RyuJIT x86-64-v4 [AttachedDebugger]
+  DefaultJob : .NET 10.0.2 (10.0.2, 10.0.225.61305), X64 RyuJIT x86-64-v4
+```
+
+| Method                       | Mean     | Error     | StdDev    | Rank | Allocated |
+|----------------------------- |---------:|----------:|----------:|-----:|----------:|
+| IsToggleAllowed_ComplexRules | 4.260 ns | 0.0103 ns | 0.0091 ns |    1 |         - |
 
 ## 如何使用
 
@@ -65,5 +79,9 @@ if (client.IsToggleAllowed("smart_recommender_v2", context))
 - ~~支持日志接入~~
 - ~~.NET 版本兼容~~
 - 支持远程判断
-- 内存分配优化
+- ~~内存分配优化~~
 - 异步流处理优化
+
+## BUG
+
+因为追求内存分配的优化导致部分日志不可用，正在缓慢修复中。。。

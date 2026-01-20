@@ -4,8 +4,6 @@ namespace Apollo.SDK.NET.Tests;
 
 public class OperatorTests
 {
-    private readonly RuleEvaluator _evaluator = new();
-
     /// <summary>
     /// 测试各种操作符的规则评估
     /// </summary>
@@ -14,48 +12,8 @@ public class OperatorTests
     /// <param name="userVal">用户值</param>
     /// <param name="expected">期望结果</param>
     [Theory]
-    #region equals
-    [InlineData("equals", "100", "100", true)]
-    [InlineData("equals", "100", "101", false)]
-    #endregion
-
-    #region not_equals
-    [InlineData("not_equals", "A", "B", true)]
-    [InlineData("not_equals", "A", "A", false)]
-    #endregion
-
-    #region contains
-    [InlineData("contains", "apple", "I like apple", true)]
-    #endregion
-
-    #region in
-    [InlineData("in", "Beijing,Shanghai,Guangzhou", "Beijing", true)]
-    [InlineData("in", "Beijing,Shanghai", "Tokyo", false)]
-    #endregion
-
-    #region gt
-    [InlineData("gt", "30", 20, false)]
-    [InlineData("gt", "30", 30, false)]
-    [InlineData("gt", "30", 40, true)]
-    [InlineData("gt", "30.0", 30.00000000000001, true)]
-    [InlineData("gt", "30.00000000000001", 30.000000, false)]
-    #endregion
-
-    #region lt
-    [InlineData("lt", "30", 20, true)]
-    [InlineData("lt", "30", 30, false)]
-    [InlineData("lt", "30", 40, false)]
-    #endregion
-
-    #region between
-    [InlineData("between", "0,10", 5, true)]
-    [InlineData("between", "0,10", 0, true)]
-    [InlineData("between", "0,10", 10, true)]
-    [InlineData("between", "0,10", 11, false)]
-    [InlineData("between", "0,10", -1, false)]
-    #endregion
-
-    public void OperatorTest(string op, string configVal, object userVal, bool expected)
+    [MemberData(nameof(GetOperatorTestData))]
+    public void OperatorTest(string op, string configVal, ApolloValue userVal, bool expected)
     {
         var rule = new Rule
         {
@@ -68,12 +26,54 @@ public class OperatorTests
         rule.Prepare();
 
         var context = new ApolloContext("user_123")
-        {
-            { "test_key", userVal }
-        };
+            .Set("test_key", userVal);
 
-        var result = _evaluator.Evaluate(rule, context);
+        var result = RuleEvaluator.Evaluate(rule, context);
 
         Assert.Equal(expected, result);
+    }
+
+    public static IEnumerable<object[]> GetOperatorTestData()
+    {
+        #region equals
+        yield return new object[] { "equals", "100", (ApolloValue)"100", true };
+        yield return new object[] { "equals", "100", (ApolloValue)"101", false };
+        #endregion
+
+        #region not_equals
+        yield return new object[] { "not_equals", "A", (ApolloValue)"B", true };
+        yield return new object[] { "not_equals", "A", (ApolloValue)"A", false };
+        #endregion
+
+        #region contains
+        yield return new object[] { "contains", "apple", (ApolloValue)"I like apple", true };
+        #endregion
+
+        #region in
+        yield return new object[] { "in", "Beijing,Shanghai,Guangzhou", (ApolloValue)"Beijing", true };
+        yield return new object[] { "in", "Beijing,Shanghai", (ApolloValue)"Tokyo", false };
+        #endregion
+
+        #region gt
+        yield return new object[] { "gt", "30", (ApolloValue)20, false };
+        yield return new object[] { "gt", "30", (ApolloValue)30, false };
+        yield return new object[] { "gt", "30", (ApolloValue)40, true };
+        yield return new object[] { "gt", "30.0", (ApolloValue)30.00000000000001, true };
+        yield return new object[] { "gt", "30.00000000000001", (ApolloValue)30.000000, false };
+        #endregion
+
+        #region lt
+        yield return new object[] { "lt", "30", (ApolloValue)20, true };
+        yield return new object[] { "lt", "30", (ApolloValue)30, false };
+        yield return new object[] { "lt", "30", (ApolloValue)40, false };
+        #endregion
+
+        #region between
+        yield return new object[] { "between", "0,10", (ApolloValue)5, true };
+        yield return new object[] { "between", "0,10", (ApolloValue)0, true };
+        yield return new object[] { "between", "0,10", (ApolloValue)10, true };
+        yield return new object[] { "between", "0,10", (ApolloValue)11, false };
+        yield return new object[] { "between", "0,10", (ApolloValue)(-1), false };
+        #endregion
     }
 }

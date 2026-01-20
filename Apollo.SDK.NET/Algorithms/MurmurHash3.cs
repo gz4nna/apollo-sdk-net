@@ -13,9 +13,9 @@ public static class MurmurHash3
     /// <param name="input">输入字符串</param>
     /// <param name="seed">种子</param>
     /// <returns></returns>
-    public static uint Hash(string input, uint seed = 0)
+    public static uint Hash(Span<char> input, uint seed = 0)
     {
-        byte[] data = System.Text.Encoding.UTF8.GetBytes(input);
+        byte[] data = System.Text.Encoding.UTF8.GetBytes(input.ToArray());
         uint c1 = 0xcc9e2d51;
         uint c2 = 0x1b873593;
         int r1 = 15;

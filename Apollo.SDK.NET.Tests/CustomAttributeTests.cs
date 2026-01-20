@@ -7,8 +7,6 @@ namespace Apollo.SDK.NET.Tests;
 /// </summary>
 public class CustomAttributeTests
 {
-    private readonly RuleEvaluator _evaluator = new();
-
     /// <summary>
     /// 测试自定义属性规则评估
     /// </summary>
@@ -26,10 +24,8 @@ public class CustomAttributeTests
         };
 
         var context = new ApolloContext("user_123")
-        {
-            { "vip_level", "9" }
-        };
+            .Set("vip_level", "9");
 
-        Assert.True(_evaluator.Evaluate(rule, context));
+        Assert.True(RuleEvaluator.Evaluate(rule, context));
     }
 }
