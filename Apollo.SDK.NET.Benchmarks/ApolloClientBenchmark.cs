@@ -30,6 +30,7 @@ public class ApolloClientBenchmark
                             { ""attribute"": ""custom"",""CustomAttribute"": ""age"", ""operator"": ""gt"", ""values"": [""18""] },
                             { ""attribute"": ""traffic"", ""operator"": ""lt"", ""values"": [""50""] },
                             { ""attribute"": ""city"", ""operator"": ""in"", ""values"": [""Beijing,Shanghai""]},
+                            { ""attribute"": ""city"", ""operator"": ""contains"", ""values"": [""jing""]},
                             { ""attribute"": ""custom"",""CustomAttribute"": ""age"", ""operator"": ""between"", ""values"": [""1,100""] }
                         ]
                     }

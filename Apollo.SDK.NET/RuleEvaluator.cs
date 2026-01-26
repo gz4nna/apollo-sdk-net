@@ -1,73 +1,78 @@
-﻿using Apollo.SDK.NET.Algorithms;
+﻿using System.Runtime.CompilerServices;
+
+using Apollo.SDK.NET.Algorithms;
 using Apollo.SDK.NET.Models;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Apollo.SDK.NET;
 
 /// <summary>
 /// 规则执行器
 /// </summary>
-public class RuleEvaluator
+public static class RuleEvaluator
 {
+    // 使用静态强类型扩展进行外部关联
+    internal static ILogger? Logger;
+    // IsLogEnabled 用来减少检查
+    internal static bool IsLogEnabled = false;
+
+    // 以前的实现
     //private readonly Dictionary<string, Func<Rule, ApolloValue, bool>> _operators;
-    private readonly ILogger<RuleEvaluator> _logger;
+    //public RuleEvaluator(ILogger<RuleEvaluator>? logger = null)
+    //{
+    //    _logger = logger ?? NullLogger<RuleEvaluator>.Instance;
+    //    _logger.LogInformation("Initializing RuleEvaluator...");
 
-    public RuleEvaluator(ILogger<RuleEvaluator>? logger = null)
-    {
-        _logger = logger ?? NullLogger<RuleEvaluator>.Instance;
-        _logger.LogInformation("Initializing RuleEvaluator...");
+    //    _operators = new Dictionary<string, Func<Rule, ApolloValue, bool>>
+    //    {
+    //        { "equals", (rule, actVal) => actVal.AsString() == rule.Value },
+    //        { "not_equals", (rule, actVal) => actVal.AsString() != rule.Value },
+    //        { "gt", (rule, actVal) =>
+    //            {
+    //                if(rule.GetParsedValue() is not double value)
+    //                    return actVal.AsNumber() > Convert.ToDouble(rule.Value);
+    //                return actVal.AsNumber() > value;
+    //            }
+    //        },
+    //        { "lt", (rule, actVal) =>
+    //            {
+    //                if(rule.GetParsedValue() is not double value)
+    //                    return actVal.AsNumber() < Convert.ToDouble(rule.Value);
+    //                return actVal.AsNumber() < value;
+    //            }
+    //        },
+    //        { "contains", (rule, actVal) => actVal.AsString()?.Contains(rule.Value) ?? false },
+    //        { "in", (rule, actVal) =>
+    //            {
+    //                // 降级
+    //                if (rule.GetParsedValue() is not HashSet<string> set)
+    //                    return rule.Value.Split(',').Select(x => x.Trim()).Contains(actVal.AsString());
+    //                return set.Contains(actVal.AsString() ?? string.Empty);
+    //            }
+    //        },
+    //        { "between", (rule, actVal) =>
+    //            {
+    //                if (!double.TryParse(actVal.AsString(), out double actual))
+    //                    return false;
+    //                // 降级
+    //                if(rule.GetParsedValue() is not ValueTuple<double, double> range)
+    //                {
+    //                    var parts = rule.Value.Split(',');
+    //                    if (parts.Length != 2) return false;
 
-        //_operators = new Dictionary<string, Func<Rule, ApolloValue, bool>>
-        //{
-        //    { "equals", (rule, actVal) => actVal.AsString() == rule.Value },
-        //    { "not_equals", (rule, actVal) => actVal.AsString() != rule.Value },
-        //    { "gt", (rule, actVal) =>
-        //        {
-        //            if(rule.GetParsedValue() is not double value)
-        //                return actVal.AsNumber() > Convert.ToDouble(rule.Value);
-        //            return actVal.AsNumber() > value;
-        //        }
-        //    },
-        //    { "lt", (rule, actVal) =>
-        //        {
-        //            if(rule.GetParsedValue() is not double value)
-        //                return actVal.AsNumber() < Convert.ToDouble(rule.Value);
-        //            return actVal.AsNumber() < value;
-        //        }
-        //    },
-        //    { "contains", (rule, actVal) => actVal.AsString()?.Contains(rule.Value) ?? false },
-        //    { "in", (rule, actVal) =>
-        //        {
-        //            // 降级
-        //            if (rule.GetParsedValue() is not HashSet<string> set)
-        //                return rule.Value.Split(',').Select(x => x.Trim()).Contains(actVal.AsString());
-        //            return set.Contains(actVal.AsString() ?? string.Empty);
-        //        }
-        //    },
-        //    { "between", (rule, actVal) =>
-        //        {
-        //            if (!double.TryParse(actVal.AsString(), out double actual))
-        //                return false;
-        //            // 降级
-        //            if(rule.GetParsedValue() is not ValueTuple<double, double> range)
-        //            {
-        //                var parts = rule.Value.Split(',');
-        //                if (parts.Length != 2) return false;
-
-        //                if (double.TryParse(parts[0], out double min) &&
-        //                    double.TryParse(parts[1], out double max) )
-        //                {
-        //                    return actual >= min && actual <= max;
-        //                }
-        //                return false;
-        //            }
-        //            return actual >= range.Item1 && actual <= range.Item2;
-        //        }
-        //    }
-        //};
-    }
+    //                    if (double.TryParse(parts[0], out double min) &&
+    //                        double.TryParse(parts[1], out double max) )
+    //                    {
+    //                        return actual >= min && actual <= max;
+    //                    }
+    //                    return false;
+    //                }
+    //                return actual >= range.Item1 && actual <= range.Item2;
+    //            }
+    //        }
+    //    };
+    //}
 
     /// <summary>
     /// 执行
@@ -79,7 +84,7 @@ public class RuleEvaluator
     {
         if (!context.TryGetValue(rule.EffectiveAttribute, out var actualValue))
         {
-            //_logger.LogError("Attribute {Attribute} not found in context.", rule.EffectiveAttribute);
+            if (IsLogEnabled) LogAttributeNotFound(rule.EffectiveAttribute);
             return false;
         }
 
@@ -129,6 +134,12 @@ public class RuleEvaluator
         //return false;
     }
 
+    /// <summary>
+    /// 匹配具体方法
+    /// </summary>
+    /// <param name="rule"></param>
+    /// <param name="actVal"></param>
+    /// <returns></returns>
     private static bool ExecuteOperator(Rule rule, ApolloValue actVal)
     {
         return rule.Operator switch
@@ -144,12 +155,12 @@ public class RuleEvaluator
         };
     }
 
-    private static bool HandleUnknownOperator(string operatorName)
-    {
-        //_logger.LogError("Operator {Operator} not supported.", operatorName);
-        return false;
-    }
-
+    /// <summary>
+    /// 大于小于
+    /// </summary>
+    /// <param name="rule"></param>
+    /// <param name="actVal"></param>
+    /// <returns></returns>
     private static bool EvaluateNumeric(Rule rule, ApolloValue actVal)
     {
         double target = rule.GetParsedValue() is double d ? d : Convert.ToDouble(rule.Value);
@@ -158,6 +169,12 @@ public class RuleEvaluator
         return rule.Operator == "gt" ? actual > target : actual < target;
     }
 
+    /// <summary>
+    /// 包含
+    /// </summary>
+    /// <param name="rule"></param>
+    /// <param name="actVal"></param>
+    /// <returns></returns>
     private static bool EvaluateIn(Rule rule, ApolloValue actVal)
     {
         var actual = actVal.AsString();
@@ -166,10 +183,16 @@ public class RuleEvaluator
         if (rule.GetParsedValue() is HashSet<string> set)
             return set.Contains(actual);
 
-        // 降级 手动扫描 Span 
+        // 确保初始化则不需要降级处理的逻辑
         return false;
     }
 
+    /// <summary>
+    /// 区间
+    /// </summary>
+    /// <param name="rule"></param>
+    /// <param name="actVal"></param>
+    /// <returns></returns>
     private static bool EvaluateBetween(Rule rule, ApolloValue actVal)
     {
         double actual = actVal.AsNumber();
@@ -177,7 +200,34 @@ public class RuleEvaluator
         if (rule.GetParsedValue() is ValueTuple<double, double> range)
             return actual >= range.Item1 && actual <= range.Item2;
 
-        // 降级
         return false;
     }
+
+    /// <summary>
+    /// 找不到操作符
+    /// </summary>
+    /// <param name="operatorName"></param>
+    /// <returns></returns>
+    private static bool HandleUnknownOperator(string operatorName)
+    {
+        if (IsLogEnabled) LogOperatorNotValid(operatorName);
+        return false;
+    }
+
+    #region 冷路径日志方法
+    // 调用前有检查，这里不用管空值判断
+#pragma warning disable CS8604 // 引用类型参数可能为 null。
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void LogAttributeNotFound(string attr)
+    {
+        Logger.LogError("Attribute {Attribute} not found in context.", attr);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void LogOperatorNotValid(string operatorName)
+    {
+        Logger.LogError("Operator {Operator} not supported.", operatorName);
+    }
+#pragma warning restore CS8604 // 引用类型参数可能为 null。
+    #endregion
 }

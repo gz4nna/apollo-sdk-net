@@ -84,4 +84,18 @@ if (client.IsToggleAllowed("smart_recommender_v2", context))
 
 ## BUG
 
-因为追求内存分配的优化导致部分日志不可用，正在缓慢修复中。。。
+~~因为追求内存分配的优化导致部分日志不可用，正在缓慢修复中。。。~~已修复
+
+## 相关工具
+
+[配置生成工具（前端）](https://github.com/ricejson/apollo-frontend)
+
+[远程校验（Go后端）](https://github.com/ricejson/apollo-backend)
+
+[接口描述](https://github.com/ricejson/apollo-idl-go)
+
+SDK：
+
+[apollo-sdk-go](https://github.com/ricejson/apollo-sdk-go)
+
+[apollo-sdk-net](https://github.com/gz4nna/apollo-sdk-net)

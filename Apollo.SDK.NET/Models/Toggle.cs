@@ -55,6 +55,9 @@ public class Toggle
     [JsonPropertyName("audiences")]
     public List<Audience> Audiences { get; set; } = new();
 
+    /// <summary>
+    /// 开关 初始化
+    /// </summary>
     public void Initialize()
     {
         Audiences?.ForEach(Audience =>
